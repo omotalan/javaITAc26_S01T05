@@ -1,14 +1,12 @@
 package s105_n1_e01_e05_directori;
 
-import static s105_n1_e01_e05_directori.Directory.listRecursiveDirectory;
+import static s105_n1_e01_e05_directori.Directory.writeRecursiveDirectoryToFile;
 
 public class Main {
 
-
-    // Exemple d'ús
     public static void main(String[] args) {
-        // Substitueix per la ruta que vulguis analitzar
         String ruta = "./";
-        listRecursiveDirectory(ruta);
+        String rutaEscritura = "output.txt";
+        writeRecursiveDirectoryToFile(ruta, rutaEscritura);
     }
 }
