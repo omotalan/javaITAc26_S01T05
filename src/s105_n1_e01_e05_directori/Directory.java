@@ -88,6 +88,21 @@ public class Directory {
             }
     }
 
+    public static void readAndPrintFile(String filePath) {
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path) || !Files.isDirectory(path)) {
+            System.err.println("Error: El fitxer especificat no existeix.");
+            return;
+        }
+
+        try (Stream<String> lines = Files.lines(path)) {
+            lines.forEach(System.out::println);
+            System.out.println("--- EOF ---");
+        } catch (IOException e) {
+            System.err.println("Error al llegir el fitxer: " + e.getMessage());
+        }
+    }
+
     public String getPath() {
         return path;
     }
