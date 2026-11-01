@@ -20,31 +20,52 @@ public class Directory {
         this.path = path;
     }
 
-    public static void writeRecursiveDirectoryToFile(String directoryPath, String outputPath) {
+    public static StringBuilder printRecursiveDirectory(String directoryPath) {
         Path directories = Paths.get(directoryPath);
 
         if (!Files.exists(directories) || !Files.isDirectory(directories)) {
             System.err.println("Error: La ruta especificada no és un directori vàlid.");
-            return;
         }
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath))) {
-            formatDirectoryOutput(directories, writer);
+        StringBuilder output = new StringBuilder();
 
-            processDirectory(directories, 0, writer);
+        String header = formatDirectoryOutput(directories);
+        output.append(header).append(System.lineSeparator());
 
-            System.out.println("Success! Directory tree saved to: " + outputPath);
+        int startingLevel = 0;
+        buildDirectoryStringRecursively(directories, startingLevel, output);
 
-        } catch (IOException e) {
-            System.err.println("Error creating or writing to the output file: " + e.getMessage());
+        System.out.println("Directory tree saved in memory. Make sure you either save it into a file or serialize it.");
+        return output;
+    }
+
+    private static void buildDirectoryStringRecursively(Path currentDir, int level, StringBuilder output) {
+        List<Path> ordered = orderItems(currentDir);
+
+        for (Path element : ordered) {
+            String fileLine = processLevelItem(element, level);
+            output.append(fileLine).append(System.lineSeparator());
+
+            if (Files.isDirectory(element)) {
+                buildDirectoryStringRecursively(element, level + 1, output);
+            }
         }
     }
 
-    private static void formatDirectoryOutput(Path directories, BufferedWriter writer) throws IOException {
-        writer.write("Arbre de directoris per a: " + directories.toAbsolutePath());
-        writer.newLine();
-        writer.write("=".repeat(60));
-        writer.newLine();
+    public static void writeRecursiveDirectoryToFile(StringBuilder output, String outputPath) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputPath))) {
+            writer.write(output.toString());
+            System.out.println("Success! Directory tree saved to: " + outputPath);
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
+    }
+
+    private static String formatDirectoryOutput(Path directories) {
+        String title = String.format("Arbre de directoris per a: " + directories.toAbsolutePath() + "\n");
+        String underline = "=".repeat(60);
+
+        return title+underline;
     }
 
     private static String processLevelItem(Path element, int level) {
@@ -71,21 +92,6 @@ public class Directory {
         }
 
         return Collections.emptyList();
-    }
-
-    private static void processDirectory(Path directori, int level, BufferedWriter writer) throws IOException {
-            List<Path> ordered = orderItems(directori);
-
-            for (Path element : ordered) {
-                String fileLine = processLevelItem(element, level);
-                writer.write(fileLine);
-                writer.newLine();
-
-                // If it's a directory, apply method recursively
-                if (Files.isDirectory(element)) {
-                    processDirectory(element, level + 1, writer);
-                }
-            }
     }
 
     public static void readAndPrintFile(String filePath) {
