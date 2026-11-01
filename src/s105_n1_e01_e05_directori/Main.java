@@ -22,8 +22,8 @@ public class Main {
         }
 
         String ruta = config.getProperty("ruta");
-        String rutaEscritura = config.getProperty("output.txt");
-        String rutaSer = config.getProperty("output.ser");
+        String rutaEscritura = config.getProperty("rutaEscritura");
+        String rutaSer = config.getProperty("rutaSer");
 
         StringBuilder output = printRecursiveDirectory(ruta);
         writeRecursiveDirectoryToFile(output, rutaEscritura);
