@@ -24,12 +24,26 @@ public class Main {
         String ruta = config.getProperty("ruta");
         String rutaEscritura = config.getProperty("rutaEscritura");
         String rutaSer = config.getProperty("rutaSer");
+        String encryptedFilePath = config.getProperty("encryptedFilePath");
+        String decryptedFilePath = config.getProperty("decryptedFilePath");
 
+        // Print to file
         StringBuilder output = printRecursiveDirectory(ruta);
         writeRecursiveDirectoryToFile(output, rutaEscritura);
 
+        // Serialize/Deserialize
         serializeObject(output, rutaSer);
         StringBuilder deserOutput = (StringBuilder) deserializeObject(rutaSer);
         System.out.println(deserOutput);
+
+        // Encrypt/Decrypt
+        String secretKeyStr = config.getProperty("crypto.secretKey");
+        String ivStr = config.getProperty("crypto.iv");
+
+        Encryptor.encryptFile(rutaEscritura, encryptedFilePath, secretKeyStr, ivStr);
+        System.out.println("File successfully encrypted to: " + encryptedFilePath);
+
+        Encryptor.decryptFile(encryptedFilePath, decryptedFilePath, secretKeyStr, ivStr);
+        System.out.println("File successfully decrypted back to: " + decryptedFilePath);
     }
 }
